@@ -10,11 +10,14 @@ module.exports = {
         'plugin:import/errors',
         'plugin:import/warnings',
         'prettier',
-        'plugin:vue/essential'
+        'plugin:vue/essential',
+        '@nuxt/eslint-config',
     ],
     parserOptions: {
         sourceType: 'module',
         ecmaVersion: 'latest',
     },
-    rules: {},
+    rules: {
+        'vue/multi-word-component-names': 0,
+    },
 };
