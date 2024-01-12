@@ -20,33 +20,21 @@ const props = defineProps({
   },
 });
 
-const bgColor = ref('#fff');
+const bgColor = ref("#fff");
 
 const checkValue = ref(props.completed);
 
 const changeStatusTask = async () => {
-  const response = await $fetch(`https://jsonplaceholder.typicode.com/todos/${props.id}`, {
-    method: 'PATCH',
-    body: JSON.stringify(({
-      completed: checkValue.value,
-    })),
-    headers: {
-      'Content-type': 'application/json; charset=UTF-8',
-    },
-  });
-
-  store.changeTask(response);
-
+  await store.changeTask(checkValue.value, props.id);
 };
 
 watchEffect(async () => {
   if (checkValue.value) {
-    bgColor.value = '#999';
+    bgColor.value = "#999";
     return;
   }
-  bgColor.value = '#fff';
+  bgColor.value = "#fff";
 });
-
 </script>
 
 <template>
@@ -57,7 +45,7 @@ watchEffect(async () => {
       @change="changeStatusTask"
       @click.stop
     >
-    <p :class="{'cart-text': true, 'card-crossed': checkValue}">
+    <p :class="{ 'cart-text': true, 'card-crossed': checkValue }">
       {{ taskText }}
     </p>
   </div>
@@ -81,5 +69,4 @@ watchEffect(async () => {
     text-decoration: line-through;
   }
 }
-
 </style>
