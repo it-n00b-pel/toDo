@@ -14,22 +14,91 @@ export const useTodos = defineStore('todos', {
         task: (state, id) => state.todos.find(task => task.id === id),
     },
     actions: {
+        async getAllTasks() {
+            const loadingIndicator = useLoadingIndicator();
+            loadingIndicator.start();
+            try {
+                const response = await $fetch('https://jsonplaceholder.typicode.com/todos');
+                this.todos = response;
+            } catch (e) {
+
+            } finally {
+                loadingIndicator.finish();
+            }
+        },
         setTask(id) {
             this.currentTask = this.todos.find((t) => t.id === id);
         },
-        createTask(task) {
-            this.todos = [task, ...this.todos];
-        },
-        changeTask(task) {
-            for (let i = 0; i < this.todos.length; i++) {
-                if (this.todos[i].id === task.id) {
-                    this.todos[i] = task;
-                    return;
-                }
+        async createTask(task) {
+            const loadingIndicator = useLoadingIndicator();
+            loadingIndicator.start();
+            try {
+                const response = await $fetch('https://jsonplaceholder.typicode.com/todos', {
+                    method: 'POST',
+                    body: JSON.stringify(({
+                        ...task,
+                    })),
+                    headers: {
+                        'Content-type': 'application/json; charset=UTF-8',
+                    },
+                });
+
+                this.todos = [response, ...this.todos];
+            } catch (e) {
+                console.error(e);
+            } finally {
+                loadingIndicator.finish();
             }
         },
-        removeTask(id) {
-            this.todos = this.todos.filter((task) => task.id !== id);
+        async changeTask(value, id) {
+            const index = this.todos.findIndex(todo => todo.id === id);
+            const loadingIndicator = useLoadingIndicator();
+            loadingIndicator.start();
+            try {
+                if (typeof value === 'string') {
+                    const response = await $fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify(({
+                            title: value,
+                        })),
+                        headers: {
+                            'Content-type': 'application/json; charset=UTF-8',
+                        },
+                    });
+
+                    this.todos[index] = response;
+                }
+                if (typeof value === 'boolean') {
+                    const response = await $fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify(({
+                            completed: value,
+                        })),
+                        headers: {
+                            'Content-type': 'application/json; charset=UTF-8',
+                        },
+                    });
+                    this.todos[index] = response;
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                loadingIndicator.finish();
+            }
+        },
+        async removeTask(id) {
+            const loadingIndicator = useLoadingIndicator();
+            loadingIndicator.start();
+            try {
+                await $fetch(`https://jsonplaceholder.typicode.com/todos/${id}`, {
+                    method: 'DELETE',
+                });
+                this.todos = this.todos.filter((task) => task.id !== id);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                loadingIndicator.finish();
+            }
         },
 
     },
