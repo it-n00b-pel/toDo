@@ -19,5 +19,8 @@ module.exports = {
     },
     rules: {
         'vue/multi-word-component-names': 0,
+        'vue/no-multiple-template-root': 0,
+        'import/prefer-default-export': 0,
+        'no-plusplus': 0,
     },
 };
