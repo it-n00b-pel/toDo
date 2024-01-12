@@ -1,28 +1,26 @@
-{
-    "env": {
-    // где будет исполняться наш код
-    "browser: true,
-    "node": true,
-        // добавляет все глобальные переменные ECMAScript 2023 и автоматически
-        //  устанавливает ecmaVersionопция парсера 14 в parserOptions
-        "es2023": true
-},
-    // Пресет с настройками. prettier должен быть последним.
-    // Он удаляет некоторые правила eslint из-за которых могут возникать конфликты.
-    // ВНИМАНИЕ!!! для vue 3 оставить 'plugin:vue/vue3-recommended', для nuxt 3 - '@nuxt/eslint-config'
-    "extends": [
-    "airbnb-base" || "airbnb-typescript/base" // если есть ts,
-    "@vue/eslint-config-typescript", // если есть ts
-    "plugin:import/recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
-    "plugin:vue/vue3-recommended" || "@nuxt/eslint-config", // если есть ts
-    "prettier",
-],
+module.exports = {
+    env: {
+        browser: true,
+        node: true,
+        es2023: true,
+    },
+    extends: [
+        'airbnb-base',
+        'plugin:import/recommended',
+        'plugin:import/errors',
+        'plugin:import/warnings',
+        'prettier',
+        'plugin:vue/essential',
+        '@nuxt/eslint-config',
+    ],
     parserOptions: {
-    // Позволяет использовать import/export, вызывает ошибкит при использовании ts
-    "sourceType": "module",
-        "ecmaVersion": "latest",
-},
-    "rules": {}
-}
+        sourceType: 'module',
+        ecmaVersion: 'latest',
+    },
+    rules: {
+        'vue/multi-word-component-names': 0,
+        'vue/no-multiple-template-root': 0,
+        'import/prefer-default-export': 0,
+        'no-plusplus': 0,
+    },
+};
