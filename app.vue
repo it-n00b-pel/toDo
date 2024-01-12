@@ -1,10 +1,11 @@
 <template>
   <div>
+    <NuxtLoadingIndicator :height="20" />
     <NuxtPage />
   </div>
 </template>
 <style>
-html{
+html {
   background-color: gainsboro;
 }
 </style>
