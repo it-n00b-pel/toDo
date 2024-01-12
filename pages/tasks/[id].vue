@@ -1,12 +1,11 @@
 <script setup>
-
 const route = useRoute();
 const todos = useTodos();
 const store = useTodos();
 
 const task = computed(() => todos.currentTask);
 const checkValue = ref(false);
-const taskText = ref('');
+const taskText = ref("");
 const isVisibleInput = ref(true);
 
 watchEffect(() => {
@@ -15,52 +14,20 @@ watchEffect(() => {
 });
 
 const deleteTask = async () => {
-  try {
-    await $fetch(`https://jsonplaceholder.typicode.com/todos/${task.value.id}`, {
-      method: 'DELETE',
-    });
-    store.removeTask(task.value.id);
-    navigateTo('/');
-  } catch (e) {
-    console.error(e);
-  }
+  await store.removeTask(task.value.id);
+  navigateTo("/");
 };
 
 const changeStatusTask = async () => {
-  try {
-    const response = await $fetch(`https://jsonplaceholder.typicode.com/todos/${task.value.id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(({
-        completed: checkValue.value,
-      })),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    });
-    store.changeTask(response);
-  } catch (e) {
-    console.error(e);
-  }
+  await store.changeTask(checkValue.value, task.value.id);
 };
 
 const changeTaskText = async () => {
-  try {
-    const response = await $fetch(`https://jsonplaceholder.typicode.com/todos/${task.value.id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(({
-        title: taskText.value,
-      })),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    });
-    store.changeTask(response);
-    navigateTo('/');
-  } catch (e) {
-    console.error(e);
+  if (taskText.value.length && task.value.title !== taskText.value) {
+    await store.changeTask(taskText.value, task.value.id);
+    navigateTo("/");
   }
 };
-
 
 onMounted(() => {
   todos.setTask(+route.params.id);
@@ -76,17 +43,19 @@ onMounted(() => {
       @click.stop
     >
     <div class="task__title">
-      <input
+      <UniversaInput
         v-if="!isVisibleInput"
-        v-model="taskText"
+        :enter-handler="true"
+        :value="taskText"
         class="task__title__input"
-        @focusout="isVisibleInput= !isVisibleInput"
-        @keyup.enter="changeTaskText"
-      >
+        @update-input-value="(value) => (taskText = value)"
+        @enter-tap="changeTaskText"
+        @focusout="isVisibleInput = !isVisibleInput"
+      />
       <p
         v-if="isVisibleInput"
         class="task__title__text"
-        @dblclick="isVisibleInput= !isVisibleInput"
+        @dblclick="isVisibleInput = !isVisibleInput"
       >
         {{ taskText }}
       </p>
@@ -102,15 +71,15 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-.task{
+.task {
   display: flex;
   gap: 30px;
   justify-content: center;
+  padding-top: 100px;
 
   .task__title {
     max-width: 400px;
     width: 100%;
-
 
     .task__title__input {
       width: 100%;
@@ -120,7 +89,6 @@ onMounted(() => {
     .task__title__text {
       width: 100%;
     }
-
   }
 
   .task__delete-btn {
@@ -133,5 +101,4 @@ onMounted(() => {
     cursor: pointer;
   }
 }
-
 </style>
