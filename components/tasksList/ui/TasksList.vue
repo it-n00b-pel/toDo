@@ -1,25 +1,22 @@
 <script setup>
-const filterType = useState('filterType');
+const filterType = useState("filterType");
 const store = useTodos();
-const {data, pending} = await useAsyncData('tasks', async () => {
-  if (!store.todos.length) {
-    const response = await $fetch('https://jsonplaceholder.typicode.com/todos');
-    store.todos = response;
-    return response;
-  }
-  return [];
-});
 
 const filteredList = computed(() => {
-  if (filterType.value === 'open') {
+  if (filterType.value === "open") {
     return store.todos.filter((task) => !task.completed);
   }
-  if (filterType.value === 'close') {
+  if (filterType.value === "close") {
     return store.todos.filter((task) => task.completed);
   }
   return store.todos;
 });
 
+onMounted(() => {
+  if (!store.todos.length) {
+    store.getAllTasks();
+  }
+});
 </script>
 
 <template>
@@ -39,7 +36,10 @@ const filteredList = computed(() => {
       />
     </NuxtLink>
   </div>
-  <h3 v-else>
+  <h3
+    v-if="!store.todos.length"
+    class="no-result"
+  >
     No Tasks
   </h3>
 </template>
@@ -49,5 +49,9 @@ const filteredList = computed(() => {
   display: flex;
   flex-direction: column;
   gap: 30px;
+}
+
+.no-result {
+  text-align: center;
 }
 </style>
