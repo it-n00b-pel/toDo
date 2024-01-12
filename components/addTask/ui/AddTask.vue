@@ -1,43 +1,29 @@
 <script setup>
-
-const taskText = ref('');
+const taskText = ref("");
 const store = useTodos();
 
 const addTask = async () => {
   if (taskText.value.length) {
     const task = {
       userId: Math.random(),
-      id: Math.random(),
       title: taskText.value,
       completed: false,
     };
-
-    const response = await $fetch('https://jsonplaceholder.typicode.com/todos', {
-      method: 'POST',
-      body: JSON.stringify(({
-        task,
-      })),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    });
-
-    store.createTask(response.task);
-    taskText.value = '';
+    await store.createTask(task);
+    taskText.value = "";
   }
 };
 </script>
 
-
 <template>
   <div class="add-task">
-    <input
-      v-model.trim="taskText"
-      type="text"
+    <UniversaInput
+      :enter-handler="true"
+      :value="taskText"
       class="add-task__input"
-      placeholder="Add Task"
-      @keyup.enter="addTask"
-    >
+      @update-input-value="(value) => (taskText = value)"
+      @enter-tap="addTask"
+    />
     <UniversalButton
       class="add-task__btn"
       @click-btn="addTask"
@@ -75,5 +61,4 @@ const addTask = async () => {
     border-radius: 5px;
   }
 }
-
 </style>
